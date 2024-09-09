@@ -40,10 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'corsheaders',
     'csv_manager',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -117,6 +119,13 @@ BROKER_URL = os.environ['BROKER_URL']
 CELERY_BROKER_URL = f'{BROKER_URL}/0'
 CELERY_RESULT_BACKEND = f'{BROKER_URL}/1'
 CELERY_WORKER_CONCURRENCY = 1
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://frontend:3000",
+]
+
 
 if 'test' in sys.argv or 'test_coverage' in sys.argv:
     MEDIA_ROOT = tempfile.mkdtemp()
