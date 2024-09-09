@@ -1,6 +1,5 @@
-
+from django.urls import path, include
 from django.http import HttpResponse
-from django.urls import path
 from django.views.generic import TemplateView
 
 
@@ -28,5 +27,6 @@ def healthcheck(request):
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html')),
-    path('healthcheck.json', healthcheck)
+    path('healthcheck.json', healthcheck),
+    path('api/', include('csv_manager.urls')),
 ]
