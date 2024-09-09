@@ -1,6 +1,5 @@
-import os
 from django.test import TestCase
-from django.core.files import File
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ValidationError
 from csv_manager.models import CSVFile
 
@@ -8,45 +7,40 @@ class CSVFileModelTest(TestCase):
     """
     Test cases for the CSVFile model.
     """
-    def setUp(self):
-        if not os.path.exists('csv_files'):
-            os.makedirs('csv_files')
 
     def test_create_valid_csv_file(self):
         """
         Test creating a CSVFile with a valid CSV file is successful.
         """
+        csv_content = 'column1,column2\nvalue1,value2\nvalue3,value4'
+        csv_file = SimpleUploadedFile(
+            name="test_file.csv",
+            content=csv_content.encode('utf-8'),
+            content_type="text/csv"
+        )
 
-        with open('csv_files/test_file.csv', 'w') as f:
-            f.write('column1,column2\nvalue1,value2\nvalue3,value4')
+        csv_model = CSVFile.objects.create(
+            file=csv_file,
+            name="Test CSV File"
+        )
 
-        with open('csv_files/test_file.csv', 'r') as f:
-            csv_file = CSVFile(
-                file=File(f, name='test_file.csv'),
-                name="Test CSV File"
-            )
-            csv_file.save()
-
-        self.assertEqual(str(csv_file), csv_file.name)
-
-        csv_file.file.delete()
-        os.remove('csv_files/test_file.csv')
+        self.assertEqual(str(csv_model), csv_model.name)
+        self.assertTrue(csv_model.file.name.endswith('test_file.csv'))
 
     def test_create_invalid_file_type(self):
         """
         Test creating a CSVFile with an invalid file type raises a ValidationError.
         """
-        with open('csv_files/test_file.xlsx', 'w') as f:
-            f.write('column1,column2\nvalue1,value2\nvalue3,value4')
+        txt_content = 'column1,column2\nvalue1,value2\nvalue3,value4'
+        txt_file = SimpleUploadedFile(
+            name="test_file.txt",
+            content=txt_content.encode('utf-8'),
+            content_type="text/plain"
+        )
 
-        with open('csv_files/test_file.xlsx', 'r') as f:
-            csv_file = CSVFile(
-                file=File(f, name='test_file.xlsx'),
-                name="Test Text File"
-            )
-            csv_file.save()
+        txt_file = CSVFile.objects.create(
+            file=txt_file,
+            name="Test Not CSV File"
+        )
 
         self.assertRaises(ValidationError)
-
-        csv_file.file.delete()
-        os.remove('csv_files/test_file.xlsx')
