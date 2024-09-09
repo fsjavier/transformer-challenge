@@ -1,3 +1,4 @@
+import os
 from django.test import TestCase
 from django.core.files import File
 from django.core.exceptions import ValidationError
@@ -7,15 +8,19 @@ class CSVFileModelTest(TestCase):
     """
     Test cases for the CSVFile model.
     """
+    def setUp(self):
+        if not os.path.exists('csv_files'):
+            os.makedirs('csv_files')
+
     def test_create_valid_csv_file(self):
         """
         Test creating a CSVFile with a valid CSV file is successful.
         """
 
-        with open('test_file.csv', 'w') as f:
+        with open('csv_files/test_file.csv', 'w') as f:
             f.write('column1,column2\nvalue1,value2\nvalue3,value4')
 
-        with open('test_file.csv', 'r') as f:
+        with open('csv_files/test_file.csv', 'r') as f:
             csv_file = CSVFile(
                 file=File(f, name='test_file.csv'),
                 name="Test CSV File"
@@ -23,16 +28,18 @@ class CSVFileModelTest(TestCase):
             csv_file.save()
 
         self.assertEqual(str(csv_file), csv_file.name)
+
         csv_file.file.delete()
+        os.remove('csv_files/test_file.csv')
 
     def test_create_invalid_file_type(self):
         """
         Test creating a CSVFile with an invalid file type raises a ValidationError.
         """
-        with open('test_file.xlsx', 'w') as f:
+        with open('csv_files/test_file.xlsx', 'w') as f:
             f.write('column1,column2\nvalue1,value2\nvalue3,value4')
 
-        with open('test_file.xlsx', 'r') as f:
+        with open('csv_files/test_file.xlsx', 'r') as f:
             csv_file = CSVFile(
                 file=File(f, name='test_file.xlsx'),
                 name="Test Text File"
@@ -40,4 +47,6 @@ class CSVFileModelTest(TestCase):
             csv_file.save()
 
         self.assertRaises(ValidationError)
+
         csv_file.file.delete()
+        os.remove('csv_files/test_file.xlsx')
