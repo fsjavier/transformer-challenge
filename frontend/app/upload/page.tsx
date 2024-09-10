@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import UploadForm from "@/app/_components/UploadForm";
+import UploadFormWrapper from "@/app/_components/UploadFormWrapper";
 
 export const metadata: Metadata = {
   title: "Upload CSV File | CSV File Manager",
@@ -8,11 +8,11 @@ export const metadata: Metadata = {
 
 export default function UploadPage() {
   return (
-    <div className="max-w-md mx-auto p-6 bg-background-light rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-text-dark">
+    <div className="container mx-auto px-4 py-8">
+      <h2 className="text-3xl font-bold mb-8 text-text-dark">
         Upload CSV File
-      </h1>
-      <UploadForm />
+      </h2>
+      <UploadFormWrapper />
     </div>
   );
 }
