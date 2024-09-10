@@ -31,6 +31,7 @@ export async function uploadCSV(formData: FormData) {
 
     if (result.success) {
       revalidatePath("/upload");
+      revalidatePath("/view");
       const csvContent = await fetchCSVContent(result.fileId);
       if (csvContent.success) {
         return { fileId: result.fileId, ...csvContent };
