@@ -5,11 +5,7 @@ import { uploadCSV } from "@/app/_lib/actions";
 import SubmitButton from "./SubmitButton";
 import StatusMessage from "./StatusMessage";
 import FileUploadArea from "./FileUploadArea";
-
-export interface CSVData {
-  headers: string[];
-  rows: string[][];
-}
+import { CSVData } from "@/app/_lib/types";
 
 interface UploadFormProps {
   onUploadSuccess: (data: CSVData) => void;

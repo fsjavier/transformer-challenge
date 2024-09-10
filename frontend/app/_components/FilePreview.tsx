@@ -1,7 +1,7 @@
 import TableBody from "./TableBody";
 import TableHeader from "./TableHeader";
 import TableRowCountInfo from "./TableRowCountInfo";
-import { CSVData } from "./UploadForm";
+import { CSVData } from "@/app/_lib/types";
 
 interface FilePreviewProps {
   data: CSVData;

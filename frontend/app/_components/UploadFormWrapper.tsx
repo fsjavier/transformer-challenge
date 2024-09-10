@@ -3,7 +3,7 @@
 import { useState } from "react";
 import UploadForm from "./UploadForm";
 import FilePreview from "./FilePreview";
-import { CSVData } from "./UploadForm";
+import { CSVData } from "@/app/_lib/types";
 
 export default function UploadFormWrapper() {
   const [csvData, setCSVData] = useState<CSVData | null>(null);
