@@ -1,29 +1,44 @@
 "use client";
 
 import { useState, useRef, ChangeEvent } from "react";
-import { ArrowUpTrayIcon } from "@heroicons/react/24/solid";
 import { uploadCSV } from "@/app/_lib/actions";
 import SubmitButton from "./SubmitButton";
+import StatusMessage from "./StatusMessage";
+import FileUploadArea from "./FileUploadArea";
 
-export default function UploadForm() {
+export interface CSVData {
+  headers: string[];
+  rows: string[][];
+}
+
+interface UploadFormProps {
+  onUploadSuccess: (data: CSVData) => void;
+}
+
+export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<
+    "idle" | "success" | "error"
+  >("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
+    if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
-      setError(null);
-      setUploadSuccess(false);
+      resetState();
     }
+  };
+
+  const resetState = () => {
+    setUploadStatus("idle");
+    setErrorMessage(null);
   };
 
   const handleSubmit = async (formData: FormData) => {
     if (!file) return;
 
-    setError(null);
-    setUploadSuccess(false);
+    resetState();
 
     try {
       formData.set("file", file);
@@ -31,15 +46,21 @@ export default function UploadForm() {
 
       const result = await uploadCSV(formData);
 
-      if (result.success) {
-        setUploadSuccess(true);
+      if (result.success && "headers" in result && "rows" in result) {
+        setUploadStatus("success");
+        onUploadSuccess({ headers: result.headers, rows: result.rows });
         setFile(null);
         formRef.current?.reset();
       } else {
-        throw new Error(result.error || "Upload failed");
+        throw new Error(
+          typeof result.error === "string"
+            ? result.error
+            : JSON.stringify(result.error)
+        );
       }
     } catch (err) {
-      setError(
+      setUploadStatus("error");
+      setErrorMessage(
         err instanceof Error
           ? err.message
           : "Failed to upload file. Please try again."
@@ -48,40 +69,12 @@ export default function UploadForm() {
   };
 
   return (
-    <form ref={formRef} action={handleSubmit} className="space-y-6">
-      <div className="flex items-center justify-center w-full">
-        <label
-          htmlFor="file-input"
-          className="flex flex-col items-center justify-center w-full h-64 border-2 border-border-darkLight border-dashed rounded-lg cursor-pointer bg-background-light hover:bg-background-secondary transition duration-300 ease-in-out"
-        >
-          <div className="flex flex-col items-center justify-center pt-5 pb-6">
-            <ArrowUpTrayIcon className="w-10 h-10 mb-3 text-text-darkLigth" />
-            <p className="mb-2 text-sm text-text-dark">
-              Click or tap to upload
-            </p>
-          </div>
-          <input
-            id="file-input"
-            name="file"
-            type="file"
-            className="hidden"
-            onChange={handleFileChange}
-            accept=".csv"
-          />
-        </label>
-      </div>
-      {file && (
-        <p className="text-sm text-text-darkLight">
-          Selected file: {file.name}
-        </p>
-      )}
-      <SubmitButton disabled={!file} text="Upload" />
-      {uploadSuccess && (
-        <p className="mt-4 text-green-500 font-semibold">
-          File uploaded successfully!
-        </p>
-      )}
-      {error && <p className="mt-4 text-red-500 font-semibold">{error}</p>}
-    </form>
+    <div className="space-y-6">
+      <form ref={formRef} action={handleSubmit} className="space-y-6">
+        <FileUploadArea file={file} onFileChange={handleFileChange} />
+        <SubmitButton disabled={!file} text="Upload" />
+        <StatusMessage status={uploadStatus} errorMessage={errorMessage} />
+      </form>
+    </div>
   );
 }
