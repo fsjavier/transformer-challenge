@@ -1,7 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { uploadCSVService, fetchCSVContentService } from "./data-service";
+import {
+  uploadCSVService,
+  fetchCSVContentService,
+  fetchCSVFilesService,
+} from "./data-service";
 
 export async function fetchCSVContent(fileId: string) {
   try {
@@ -39,6 +43,18 @@ export async function uploadCSV(formData: FormData) {
     } else {
       return { success: false, error: result.error };
     }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function fetchCSVFiles() {
+  try {
+    const result = await fetchCSVFilesService();
+    return result;
   } catch (error) {
     return {
       success: false,
