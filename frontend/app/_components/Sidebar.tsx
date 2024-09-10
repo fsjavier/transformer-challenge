@@ -2,16 +2,22 @@
 
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/16/solid";
 import LinkNavigation from "./LinkNavigation";
+import { NavLink, navLinks } from "./NavLinks";
 import { usePathname } from "next/navigation";
 import { useCollapsible } from "../_hooks/useCollapsible";
-import { NavLink, navLinks } from "./NavLinks";
 
-export default function Sidebar() {
+interface SidebarProps {
+  className?: string;
+}
+
+export default function Sidebar({ className }: SidebarProps) {
   const { isCollapsed: isNavCollapsed, toggle: toggleNav } = useCollapsible();
   const pathname = usePathname();
 
   return (
-    <nav className="row-start-2 col-start-1 h-full overflow-hidden bg-background-dark text-text-light">
+    <nav
+      className={`row-start-2 col-start-1 h-full overflow-hidden bg-background-dark text-text-light ${className}`}
+    >
       <div
         className={`transition-all duration-300 ease-in-out flex flex-col h-full ${
           isNavCollapsed ? "w-16" : "w-52"
