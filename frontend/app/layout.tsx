@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./_components/Header";
 import Sidebar from "./_components/Sidebar";
+import BottomNav from "./_components/BottomNav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,12 +19,13 @@ interface RootLayoutProps {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="en" className="h-full">
-      <body
-        className={`${inter.className} h-full grid grid-rows-[auto_1fr] grid-cols-[auto_1fr]`}
-      >
-        <Header />
-        <Sidebar />
-        <main className="container mx-auto p-4 overflow-auto">{children}</main>
+      <body className={`${inter.className} h-full`}>
+        <div className="h-full flex flex-col lg:grid lg:grid-cols-[auto_1fr] lg:grid-rows-[auto_1fr]">
+          <Header className="col-span-2" />
+          <Sidebar className="hidden lg:block" />
+          <main className="flex-1 overflow-auto p-4 lg:p-6">{children}</main>
+          <BottomNav className="lg:hidden" />
+        </div>
       </body>
     </html>
   );
