@@ -13,6 +13,22 @@ class CSVFileListCreateView(generics.ListCreateAPIView):
     queryset = CSVFile.objects.all()
     serializer_class = CSVFileSerializer
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                'success': False,
+                'error': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        self.perform_create(serializer)
+
+        return Response({
+            'success': True,
+            'id': serializer.data['id'],
+            'name': serializer.data['name']
+        }, status=status.HTTP_201_CREATED)
+
 class CSVFileRetrieveHeaderView(generics.RetrieveAPIView):
     """
     Retrieve the header of a CSV file.
