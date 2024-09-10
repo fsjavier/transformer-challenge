@@ -1,7 +1,20 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { uploadCSVService } from "./data-service";
+import { uploadCSVService, fetchCSVContentService } from "./data-service";
+
+export async function fetchCSVContent(fileId: string) {
+  try {
+    const result = await fetchCSVContentService(fileId);
+    return result;
+  } catch (error) {
+    console.error("Fetch CSV content error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
 
 export async function uploadCSV(formData: FormData) {
   const file = formData.get("file") as File;
@@ -14,12 +27,19 @@ export async function uploadCSV(formData: FormData) {
 
     if (result.success) {
       revalidatePath("/upload");
-      return { success: true };
+      const csvContent = await fetchCSVContent(result.fileId);
+      if (csvContent.success) {
+        return { fileId: result.fileId, ...csvContent };
+      } else {
+        return {
+          success: false,
+          error: csvContent.error || "Failed to fetch CSV content",
+        };
+      }
     } else {
-      throw new Error("Upload failed");
+      return { success: false, error: result.error };
     }
   } catch (error) {
-    console.error("Upload error:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : String(error),
