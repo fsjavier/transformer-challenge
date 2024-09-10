@@ -30,12 +30,27 @@ export async function fetchCSVContentService(fileId: string) {
   try {
     const response = await fetch(`${API_URL}/csv-files/${fileId}/content/`);
     if (!response.ok) {
-      throw new Error("Failed to fetch CSV content");
+      throw new Error(response.statusText);
     }
     const data = await response.json();
     return { success: true, headers: data.headers, rows: data.rows };
   } catch (error) {
-    console.error("Fetch CSV content error:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function fetchCSVFilesService() {
+  try {
+    const response = await fetch(`${API_URL}/csv-files/`);
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    const data = await response.json();
+    return { success: true, files: data };
+  } catch (error) {
     return {
       success: false,
       error: error instanceof Error ? error.message : String(error),
