@@ -9,8 +9,21 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        background: {
+          light: "rgb(255, 255, 255)",
+          secondary: "rgb(237, 239, 241)",
+          dark: "rgb(49, 61, 90)",
+        },
+        text: {
+          light: "rgb(255, 255, 255)",
+          primary: "rgb(24, 57, 160)",
+          secondary: "rgb(0, 255, 197)",
+          darkLigth: "rgb(144, 144, 144)",
+          dark: "rgb(0, 0, 0)",
+        },
+        border: {
+          light: "rgb(221, 224, 228)",
+        },
       },
     },
   },
