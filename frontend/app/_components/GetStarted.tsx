@@ -20,9 +20,9 @@ interface GetStartedSectionProps {
 export function GetStartedSection({ items }: GetStartedSectionProps) {
   return (
     <section className="bg-background-light p-8 rounded-lg shadow-lg w-fit mx-auto">
-      <h2 className="text-2xl font-semibold text-text-dark mb-6">
+      <h3 className="text-2xl font-semibold text-text-dark mb-6">
         Getting Started
-      </h2>
+      </h3>
       <ul className="space-y-4">
         {items.map((item, index) => {
           const Icon = iconMap[item.iconName as keyof typeof iconMap];

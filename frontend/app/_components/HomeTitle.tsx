@@ -6,7 +6,7 @@ interface HeaderProps {
 export function Header({ title, subtitle }: HeaderProps) {
   return (
     <header className="text-center mb-12">
-      <h2 className="text-4xl font-bold text-primary-600 mb-4">{title}</h2>
+      <h2 className="text-3xl font-semibold text-primary-600 mb-4">{title}</h2>
       <p className="text-xl text-gray-600 max-w-2xl mx-auto">{subtitle}</p>
     </header>
   );
