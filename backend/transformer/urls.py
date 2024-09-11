@@ -1,6 +1,10 @@
 from django.urls import path, include
 from django.http import HttpResponse
 from django.views.generic import TemplateView
+from drf_spectacular.views import (
+     SpectacularAPIView,
+     SpectacularSwaggerView
+)
 
 
 def healthcheck(request):
@@ -28,5 +32,7 @@ def healthcheck(request):
 urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html')),
     path('healthcheck.json', healthcheck),
+    path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='api-schema'), name='api-docs'),
     path('api/', include('csv_manager.urls')),
 ]

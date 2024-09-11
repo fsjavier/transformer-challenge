@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'drf_spectacular',
     'corsheaders',
     'csv_manager',
 ]
@@ -129,3 +130,14 @@ CORS_ALLOWED_ORIGINS = [
 
 if 'test' in sys.argv or 'test_coverage' in sys.argv:
     MEDIA_ROOT = tempfile.mkdtemp()
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Transformer API',
+    'DESCRIPTION': 'API for Transformer project',
+    'VERSION': '1.0.0',
+}

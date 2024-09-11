@@ -13,6 +13,7 @@ Full-stack web application that allows users to upload, view, and enrich CSV fil
 2. Access the application:
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8000
+   - Swagger API Docs: http://localhost:8000/api/docs/
 
 ## App requirements
 
