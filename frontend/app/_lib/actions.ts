@@ -10,9 +10,8 @@ import {
 export async function fetchCSVContent(fileId: string) {
   try {
     const result = await fetchCSVContentService(fileId);
-    return result;
+    return { success: true, ...result };
   } catch (error) {
-    console.error("Fetch CSV content error:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : String(error),
@@ -28,21 +27,14 @@ export async function uploadCSV(formData: FormData) {
 
   try {
     const result = await uploadCSVService(formData);
+    revalidatePath("/upload");
+    revalidatePath("/view");
 
-    if (result.success) {
-      revalidatePath("/upload");
-      revalidatePath("/view");
-      const csvContent = await fetchCSVContent(result.fileId);
-      if (csvContent.success) {
-        return { fileId: result.fileId, ...csvContent };
-      } else {
-        return {
-          success: false,
-          error: csvContent.error || "Failed to fetch CSV content",
-        };
-      }
+    const csvContent = await fetchCSVContent(result.id);
+    if (csvContent.success) {
+      return { success: true, fileId: result.id, ...csvContent };
     } else {
-      return { success: false, error: result.error };
+      throw new Error(csvContent.error || "Failed to fetch CSV content");
     }
   } catch (error) {
     return {
@@ -54,8 +46,8 @@ export async function uploadCSV(formData: FormData) {
 
 export async function fetchCSVFiles() {
   try {
-    const result = await fetchCSVFilesService();
-    return result;
+    const files = await fetchCSVFilesService();
+    return { success: true, files };
   } catch (error) {
     return {
       success: false,

@@ -1,59 +1,40 @@
-const API_URL = "http://backend:8000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://backend:8000/api";
 
 export async function uploadCSVService(formData: FormData) {
-  try {
-    const response = await fetch(`${API_URL}/csv-files/`, {
-      method: "POST",
-      body: formData,
-    });
+  const response = await fetch(`${API_URL}/csv-files/`, {
+    method: "POST",
+    body: formData,
+  });
 
+  if (!response.ok) {
     const data = await response.json();
-
-    if (!response.ok) {
-      if (data.error && typeof data.error === "object") {
-        const errorMessages = Object.values(data.error).flat();
-        return { success: false, error: errorMessages.join(". ") };
-      }
-      return { success: false, error: data.error || "Failed to upload CSV" };
-    }
-
-    return { success: true, fileId: data.id };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-    };
+    const errorMessages = Object.values(data.error).flat();
+    throw new Error(`Failed to upload CSV: ${errorMessages.join(", ")}`);
   }
+
+  return response.json();
 }
 
 export async function fetchCSVContentService(fileId: string) {
-  try {
-    const response = await fetch(`${API_URL}/csv-files/${fileId}/content/`);
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
+  const response = await fetch(`${API_URL}/csv-files/${fileId}/content/`);
+
+  if (!response.ok) {
     const data = await response.json();
-    return { success: true, headers: data.headers, rows: data.rows };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-    };
+    const errorMessage = data.error;
+    throw new Error(`Failed to fetch CSV content: ${errorMessage}`);
   }
+
+  return response.json();
 }
 
 export async function fetchCSVFilesService() {
-  try {
-    const response = await fetch(`${API_URL}/csv-files/`);
-    if (!response.ok) {
-      throw new Error(response.statusText);
-    }
+  const response = await fetch(`${API_URL}/csv-files/`);
+
+  if (!response.ok) {
     const data = await response.json();
-    return { success: true, files: data };
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-    };
+    const errorMessage = data.error;
+    throw new Error(`Failed to fetch CSV content: ${errorMessage}`);
   }
+
+  return response.json();
 }
