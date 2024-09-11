@@ -85,6 +85,8 @@ export async function enrichCSV(formData: FormData) {
 export async function checkEnrichmentStatus(taskId: string) {
   try {
     const result = await checkEnrichmentStatusService(taskId);
+    revalidatePath("/view");
+    revalidatePath("/enrich");
     return { success: true, ...result };
   } catch (error) {
     return {
