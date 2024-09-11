@@ -53,3 +53,20 @@ _As a user I would like to enrich my data file with additional details fetched f
 - **Database**: PostgreSQL
 - **Task Queue**: Celery with Redis
 - **Containerization**: Docker
+
+## Future Improvements
+
+Due to time constraints, not all desired features have been implemented. Among the features planned for future iterations are:
+
+- Set up external storage for CSV files (e.g., AWS S3 or Azure Blob Storage)
+- Implement authentication and permissions system
+- Add a detailed view for individual CSV files
+- Enable file deletion functionality
+- Allow editing of column names and file names
+- Implement pagination / lazy loading for large CSV files in the preview
+- Implement pagination / lazy loading for the list of uploaded files
+- Implement detailed updates for long-running enrichment tasks
+- Add export functionality for enriched CSV files
+- Implement a more robust error handling and logging system
+- Improve unit test coverage and add e2e tests
+- Prepare for production deployment
