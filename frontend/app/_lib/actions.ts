@@ -33,6 +33,7 @@ export async function uploadCSV(formData: FormData) {
     const result = await uploadCSVService(formData);
     revalidatePath("/upload");
     revalidatePath("/view");
+    revalidatePath("/enrich");
 
     const csvContent = await fetchCSVContent(result.id);
     if (csvContent.success) {
