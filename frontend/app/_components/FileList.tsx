@@ -33,7 +33,9 @@ export default function FileList({
       <ul className="space-y-2">
         {files.map((file) => (
           <li key={file.id} className="flex justify-between items-center">
-            <span className="text-text-darkLight">{file.name}</span>
+            <span className="text-text-darkLight max-w-[70%] overflow-hidden text-ellipsis">
+              {file.name}
+            </span>
             <button
               onClick={() => handleFileSelect(file.id)}
               className="bg-primary text-text-primary px-3 py-1 rounded hover:bg-primary-dark transition-colors"
