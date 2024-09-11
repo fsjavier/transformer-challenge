@@ -9,6 +9,7 @@ import {
   checkEnrichmentStatusService,
   fetchCSVHeadersService,
 } from "./data-service";
+import { EnrichmentData } from "./types";
 
 export async function fetchCSVContent(fileId: string) {
   try {
@@ -68,7 +69,10 @@ export async function enrichCSV(formData: FormData) {
       api_key_name: formData.get("apiKeyName"),
     };
 
-    const result = await enrichCSVService(fileId, enrichmentData);
+    const result = await enrichCSVService(
+      fileId,
+      enrichmentData as EnrichmentData
+    );
     return { success: true, taskId: result.task_id };
   } catch (error) {
     return {

@@ -1,3 +1,5 @@
+import { EnrichmentData } from "./types";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://backend:8000/api";
 
 async function handleResponse(response: Response) {
@@ -34,7 +36,10 @@ export async function fetchCSVFilesService() {
   return handleResponse(response);
 }
 
-export async function enrichCSVService(fileId: string, enrichmentData: any) {
+export async function enrichCSVService(
+  fileId: string,
+  enrichmentData: EnrichmentData
+) {
   const response = await fetch(`${API_URL}/csv-files/${fileId}/enrich/`, {
     method: "POST",
     headers: {
