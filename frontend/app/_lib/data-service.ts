@@ -1,40 +1,56 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://backend:8000/api";
 
+async function handleResponse(response: Response) {
+  if (!response.ok) {
+    const data = await response.json();
+    console.log(data.error);
+    const errorMessage =
+      typeof data.error === "object"
+        ? Object.values(data.error).flat()
+        : data.error || "An error occurred";
+    console.log(errorMessage);
+    throw new Error(
+      Array.isArray(errorMessage) ? errorMessage.join(", ") : errorMessage
+    );
+  }
+  return response.json();
+}
+
 export async function uploadCSVService(formData: FormData) {
   const response = await fetch(`${API_URL}/csv-files/`, {
     method: "POST",
     body: formData,
   });
-
-  if (!response.ok) {
-    const data = await response.json();
-    const errorMessages = Object.values(data.error).flat();
-    throw new Error(`Failed to upload CSV: ${errorMessages.join(", ")}`);
-  }
-
-  return response.json();
+  return handleResponse(response);
 }
 
 export async function fetchCSVContentService(fileId: string) {
   const response = await fetch(`${API_URL}/csv-files/${fileId}/content/`);
-
-  if (!response.ok) {
-    const data = await response.json();
-    const errorMessage = data.error;
-    throw new Error(`Failed to fetch CSV content: ${errorMessage}`);
-  }
-
-  return response.json();
+  return handleResponse(response);
 }
 
 export async function fetchCSVFilesService() {
   const response = await fetch(`${API_URL}/csv-files/`);
+  return handleResponse(response);
+}
 
-  if (!response.ok) {
-    const data = await response.json();
-    const errorMessage = data.error;
-    throw new Error(`Failed to fetch CSV content: ${errorMessage}`);
-  }
+export async function enrichCSVService(fileId: string, enrichmentData: any) {
+  const response = await fetch(`${API_URL}/csv-files/${fileId}/enrich/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(enrichmentData),
+  });
+  return handleResponse(response);
+}
 
-  return response.json();
+export async function checkEnrichmentStatusService(taskId: string) {
+  const response = await fetch(`${API_URL}/enrichment-tasks/${taskId}/`);
+  return handleResponse(response);
+}
+
+export async function fetchCSVHeadersService(fileId: string) {
+  const response = await fetch(`${API_URL}/csv-files/${fileId}/headers/`);
+  return handleResponse(response);
 }
