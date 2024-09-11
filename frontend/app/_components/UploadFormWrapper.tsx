@@ -16,7 +16,13 @@ export default function UploadFormWrapper() {
         </div>
       </div>
       <div className="lg:col-span-2">
-        {csvData && <FilePreview data={csvData} />}
+        {csvData ? (
+          <FilePreview data={csvData} />
+        ) : (
+          <p className="text-text-darkLight text-center">
+            Upload a file to preview it
+          </p>
+        )}
       </div>
     </div>
   );
