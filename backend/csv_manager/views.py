@@ -1,10 +1,12 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from django.http import FileResponse
-from .models import CSVFile
-from .serializers import CSVFileSerializer
 import csv
 from io import StringIO
+from celery.result import AsyncResult
+from .models import CSVFile
+from .serializers import CSVFileSerializer
+from .tasks import enrich_csv
+
 
 class CSVFileListCreateView(generics.ListCreateAPIView):
     """
@@ -56,7 +58,6 @@ class CSVFileRetrieveHeaderView(generics.RetrieveAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-
 class CSVFileRetrieveContentView(generics.RetrieveAPIView):
     """
     Retrieve the content of a CSV file.
@@ -84,3 +85,52 @@ class CSVFileRetrieveContentView(generics.RetrieveAPIView):
                 {'error': f"Error reading the content of the file: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class CSVFileEnrichView(generics.CreateAPIView):
+    """
+    Enrich a CSV file with data from an external API.
+    """
+    serializer_class = CSVFileSerializer
+    queryset = CSVFile.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        try:
+            csv_file = self.get_object()
+            api_endpoint = request.data.get('api_endpoint')
+            key_column = request.data.get('key_column')
+            api_key_name = request.data.get('api_key_name')
+
+            if not all([api_endpoint, key_column, api_key_name]):
+                return Response(
+                    {'error': 'Missing required fields'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            task = enrich_csv.delay(csv_file.id, api_endpoint, key_column, api_key_name)
+            return Response(
+                {
+                    "message": "Enrichment task started",
+                    "task_id": str(task.id)
+                },
+                status=status.HTTP_202_ACCEPTED
+            )
+        except Exception as e:
+            return Response(
+                {'error': f"Error starting enrichment task: {str(e)}"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+class EnrichmentTaskStatusView(generics.RetrieveAPIView):
+    """
+    Retrieve the status of an enrichment task.
+    """
+    def retrieve(self, request, task_id, *args, **kwargs):
+        task_result = AsyncResult(task_id)
+        if task_result.successful():
+            return Response({"status": "completed", "result": task_result.result})
+        elif task_result.failed():
+            return Response({"status": "failed", "error": str(task_result.result)})
+        elif task_result.status == 'PENDING':
+            return Response({"status": "pending"})
+        else:
+            return Response({"status": "in_progress"})
