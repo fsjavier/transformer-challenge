@@ -3,6 +3,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.exceptions import ValidationError
 from csv_manager.models import CSVFile
 
+
 class CSVFileModelTest(TestCase):
     """
     Test cases for the CSVFile model.
@@ -29,7 +30,8 @@ class CSVFileModelTest(TestCase):
 
     def test_create_invalid_file_type(self):
         """
-        Test creating a CSVFile with an invalid file type raises a ValidationError.
+        Test creating a CSVFile with an invalid file type raises a
+        ValidationError.
         """
         txt_content = 'column1,column2\nvalue1,value2\nvalue3,value4'
         txt_file = SimpleUploadedFile(

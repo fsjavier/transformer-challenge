@@ -3,6 +3,7 @@ from io import StringIO
 from rest_framework import serializers
 from .models import CSVFile
 
+
 class CSVFileSerializer(serializers.ModelSerializer):
     """Serializer for the CSVFile model."""
     class Meta:
@@ -21,10 +22,14 @@ class CSVFileSerializer(serializers.ModelSerializer):
         header = next(csv_reader, None)
 
         if not header or all(cell.strip() == '' for cell in header):
-            raise serializers.ValidationError("The CSV file must have a non-empty header row.")
+            raise serializers.ValidationError(
+                "The CSV file must have a non-empty header row."
+            )
 
         first_row = next(csv_reader, None)
         if not first_row:
-            raise serializers.ValidationError("The CSV file must contain at least one data row.")
+            raise serializers.ValidationError(
+                "The CSV file must contain at least one data row."
+            )
 
         return value

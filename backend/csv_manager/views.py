@@ -31,6 +31,7 @@ class CSVFileListCreateView(generics.ListCreateAPIView):
             'name': serializer.data['name']
         }, status=status.HTTP_201_CREATED)
 
+
 class CSVFileRetrieveHeaderView(generics.RetrieveAPIView):
     """
     Retrieve the header of a CSV file.
@@ -58,6 +59,7 @@ class CSVFileRetrieveHeaderView(generics.RetrieveAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+
 class CSVFileRetrieveContentView(generics.RetrieveAPIView):
     """
     Retrieve the content of a CSV file.
@@ -75,16 +77,17 @@ class CSVFileRetrieveContentView(generics.RetrieveAPIView):
             rows = list(csv_reader)
 
             return Response({
-            'id': csv_file.id,
-            'name': csv_file.name,
-            'headers': headers,
-            'rows': rows
+                'id': csv_file.id,
+                'name': csv_file.name,
+                'headers': headers,
+                'rows': rows
             })
         except Exception as e:
             return Response(
                 {'error': f"Error reading the content of the file: {str(e)}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
 
 class CSVFileEnrichView(generics.CreateAPIView):
     """
@@ -106,7 +109,12 @@ class CSVFileEnrichView(generics.CreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            task = enrich_csv.delay(csv_file.id, api_endpoint, key_column, api_key_name)
+            task = enrich_csv.delay(
+                csv_file.id,
+                api_endpoint,
+                key_column,
+                api_key_name
+            )
             return Response(
                 {
                     "message": "Enrichment task started",
@@ -120,6 +128,7 @@ class CSVFileEnrichView(generics.CreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+
 class EnrichmentTaskStatusView(generics.RetrieveAPIView):
     """
     Retrieve the status of an enrichment task.
@@ -127,9 +136,13 @@ class EnrichmentTaskStatusView(generics.RetrieveAPIView):
     def retrieve(self, request, task_id, *args, **kwargs):
         task_result = AsyncResult(task_id)
         if task_result.successful():
-            return Response({"status": "completed", "result": task_result.result})
+            return Response(
+                {"status": "completed", "result": task_result.result}
+            )
         elif task_result.failed():
-            return Response({"status": "failed", "error": str(task_result.result)})
+            return Response(
+                {"status": "failed", "error": str(task_result.result)}
+            )
         elif task_result.status == 'PENDING':
             return Response({"status": "pending"})
         else:

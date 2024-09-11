@@ -4,6 +4,7 @@ import requests
 from celery import shared_task
 from .models import CSVFile
 
+
 @shared_task
 def enrich_csv(file_id, api_endpoint, key_column, api_key_name):
     """
@@ -23,7 +24,9 @@ def enrich_csv(file_id, api_endpoint, key_column, api_key_name):
         api_data = response.json()
 
         if not api_data or api_key_name not in api_data[0]:
-            raise ValueError(f"The API key '{api_key_name}' is not present in the API response.")
+            raise ValueError(
+                f"The API key '{api_key_name}' is not present in the API response."
+            )
 
         api_lookup = {str(item[api_key_name]): item for item in api_data}
 
@@ -45,9 +48,12 @@ def enrich_csv(file_id, api_endpoint, key_column, api_key_name):
 
         enriched_file_name = f"enriched_{csv_file.name}"
         enriched_file = CSVFile(name=enriched_file_name)
-        enriched_file.file.save(enriched_file_name, io.BytesIO(output.getvalue().encode()))
+        enriched_file.file.save(
+            enriched_file_name,
+            io.BytesIO(output.getvalue().encode())
+        )
         enriched_file.save()
 
         return enriched_file.id
-    except Exception as e:
+    except Exception:
         raise

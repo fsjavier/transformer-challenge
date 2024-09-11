@@ -7,11 +7,14 @@ from csv_manager.models import CSVFile
 
 URL_CSV_FILE_LIST_CREATE = reverse('csv_manager:csv_file_list_create')
 
+
 def get_url_csv_file_headers(csv_file_id):
     return reverse('csv_manager:csv_file_headers', args=[csv_file_id])
 
+
 def get_url_csv_file_content(csv_file_id):
     return reverse('csv_manager:csv_file_content', args=[csv_file_id])
+
 
 def create_csv_file():
     csv_content = 'column1,column2\nvalue1,value2\nvalue3,value4'
@@ -21,6 +24,7 @@ def create_csv_file():
         content_type="text/csv"
     )
     return csv_file
+
 
 class CSVFileViewsTest(TestCase):
     """Test the CSVFile views."""
@@ -49,7 +53,7 @@ class CSVFileViewsTest(TestCase):
         Test the CSV list view.
         """
         csv_file = create_csv_file()
-        csv_object = CSVFile.objects.create(
+        CSVFile.objects.create(
             file=csv_file,
             name="Test CSV File"
         )
@@ -87,4 +91,10 @@ class CSVFileViewsTest(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('rows', response.data)
-        self.assertEqual(response.data['rows'], [['value1', 'value2'], ['value3', 'value4']])
+        self.assertEqual(
+            response.data['rows'],
+            [
+                ["value1", "value2"],
+                ["value3", "value4"],
+            ],
+        )
