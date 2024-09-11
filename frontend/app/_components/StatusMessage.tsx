@@ -1,5 +1,5 @@
 interface StatusMessageProps {
-  status: "loading" | "success" | "error";
+  status: "idle" | "loading" | "success" | "error";
   errorMessage: string | null;
 }
 
