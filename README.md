@@ -68,5 +68,6 @@ Due to time constraints, not all desired features have been implemented. Among t
 - Implement detailed updates for long-running enrichment tasks
 - Add export functionality for enriched CSV files
 - Implement a more robust error handling and logging system
+- Reject enrichments where the original file remains unchanged
 - Improve unit test coverage and add e2e tests
 - Prepare for production deployment
