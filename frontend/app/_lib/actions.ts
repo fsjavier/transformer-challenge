@@ -5,6 +5,9 @@ import {
   uploadCSVService,
   fetchCSVContentService,
   fetchCSVFilesService,
+  enrichCSVService,
+  checkEnrichmentStatusService,
+  fetchCSVHeadersService,
 } from "./data-service";
 
 export async function fetchCSVContent(fileId: string) {
@@ -48,6 +51,49 @@ export async function fetchCSVFiles() {
   try {
     const files = await fetchCSVFilesService();
     return { success: true, files };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function enrichCSV(formData: FormData) {
+  try {
+    const fileId = formData.get("file") as string;
+    const enrichmentData = {
+      api_endpoint: formData.get("apiEndpoint"),
+      key_column: formData.get("keyColumn"),
+      api_key_name: formData.get("apiKeyName"),
+    };
+
+    const result = await enrichCSVService(fileId, enrichmentData);
+    return { success: true, taskId: result.task_id };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function checkEnrichmentStatus(taskId: string) {
+  try {
+    const result = await checkEnrichmentStatusService(taskId);
+    return { success: true, ...result };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+export async function fetchCSVHeaders(fileId: string) {
+  try {
+    const result = await fetchCSVHeadersService(fileId);
+    return { success: true, headers: result.headers };
   } catch (error) {
     return {
       success: false,
