@@ -17,8 +17,8 @@ export default function ViewDataWrapper({
   const [data, setData] = useState<CSVData>({ headers: [], rows: [] });
   const [error, setError] = useState<string>("");
   const [loadStatus, setLoadStatus] = useState<
-    "loading" | "success" | "error" | null
-  >(null);
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

@@ -14,8 +14,8 @@ interface UploadFormProps {
 export default function UploadForm({ onUploadSuccess }: UploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploadStatus, setUploadStatus] = useState<
-    "loading" | "success" | "error"
-  >("loading");
+    "idle" | "loading" | "success" | "error"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 

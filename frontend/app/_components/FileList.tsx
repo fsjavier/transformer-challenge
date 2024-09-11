@@ -6,7 +6,7 @@ interface FileListProps {
   files: CSVFile[];
   setData: (data: CSVData) => void;
   setError: (error: string) => void;
-  setLoadStatus: (status: "loading" | "success" | "error") => void;
+  setLoadStatus: (status: "idle" | "loading" | "success" | "error") => void;
 }
 
 export default function FileList({
